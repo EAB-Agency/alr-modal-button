@@ -1,6 +1,6 @@
 window.addEventListener('load', setup);
 
-let corsAPIFetchHTMLEndpoint = 'http://localhost:8888/api/boop';
+let corsAPIFetchHTMLEndpoint = 'https://alr.netlify.app/api/cors';
 
 let ctaButtonId = 'eab-cta-button';
 let eabModalId = 'eab-modal';
