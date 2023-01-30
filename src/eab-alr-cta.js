@@ -5,9 +5,13 @@ let corsAPIFetchHTMLEndpoint = 'https://alr.netlify.app/api/cors';
 let ctaButtonId = 'eab-cta-button';
 let eabModalId = 'eab-modal';
 let iframeID = 'eab-iframe';
+let modalHeight = 90;
 
 // grab script tag that fired this event
 let onPageScript = document.currentScript;
+
+// grab classList from the script tag
+let classList = onPageScript.classList;
 
 // grab text from inside the script tag
 let buttonText = onPageScript.textContent;
@@ -15,7 +19,9 @@ let buttonText = onPageScript.textContent;
 buttonText = buttonText.replace(/["']/g, '');
 
 // grab data attributes from the script tag
-const { partnerurl } = onPageScript.dataset;
+const { partnerurl, height } = onPageScript.dataset;
+// if height is not set, then set it to 100
+modalHeight = height || modalHeight;
 
 // going to use current url to pass to the api endpoint, so that we can track which page the user came from
 var currentURL = window.location.hostname;
@@ -44,7 +50,7 @@ let modalStyles = `
 }
 
 #${eabModalId} .modal {
-    height: 90%;
+    height:  ${modalHeight}%;
   width: 90%;
   margin: 0 auto;
   width: 600px;
@@ -81,6 +87,9 @@ function setup() {
 
   let ctaButton = document.createElement('button');
   ctaButton.id = ctaButtonId;
+  for (const className of classList) {
+    ctaButton.classList.add(className);
+  }
   ctaButton.innerHTML = buttonText || 'CTA Button';
 
   // Add a close button
@@ -117,24 +126,26 @@ function setup() {
     return false;
   }
 
+   contentsOfInnerHTML = createIframe(partnerLandingPage);
+   modal.appendChild(contentsOfInnerHTML);
+
   // call the function and pass in the partner landing page url and console out the HTML after it resolves
-  getHTML(partnerLandingPage).then(html => {
-    if (html) {
-      console.log('📝 here comes the HTML!');
-      let strippedHTML = stripStyles(html);
-      let updatedLinksHTML = rewriteLinks(strippedHTML, partnerLandingPage);
+  // getHTML(partnerLandingPage).then(html => {
+  //   if (html) {
+  //     console.log('📝 here comes the HTML!');
+  //     let strippedHTML = stripStyles(html);
+  //     let updatedLinksHTML = rewriteLinks(strippedHTML, partnerLandingPage);
 
-      let contentsOfInnerHTML;
+  //     let contentsOfInnerHTML;
 
-      contentsOfInnerHTML = createIframe(partnerLandingPage);
-      modal.appendChild(contentsOfInnerHTML);
+     
 
-      //   if using these two below, then comment out the iframe above
-      // problem with the below is not all the js works
-      //   contentsOfInnerHTML = parseHTMLString(updatedLinksHTML);
-      //     modal.innerHTML = contentsOfInnerHTML;
-    }
-  });
+  //     //   if using these two below, then comment out the iframe above
+  //     // problem with the below is not all the js works
+  //       // contentsOfInnerHTML = parseHTMLString(updatedLinksHTML);
+  //       //   modal.innerHTML = contentsOfInnerHTML;
+  //   }
+  // });
 }
 
 // function that takes a url and creates an ifram and appends it to modal
