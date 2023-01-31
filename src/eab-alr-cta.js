@@ -6,6 +6,7 @@ let ctaButtonId = 'eab-cta-button';
 let eabModalId = 'eab-modal';
 let iframeID = 'eab-iframe';
 let modalHeight = 90;
+let closeButtonId = 'eab-closeButton';
 
 // grab script tag that fired this event
 let onPageScript = document.currentScript;
@@ -30,37 +31,63 @@ var currentURL = window.location.hostname;
 const partnerLandingPage = `https://${partnerurl}?utm_source=${currentURL}&utm_medium=referral&utm_campaign=alr`;
 
 let modalStyles = `
+:where(html) {
+  --eab-blue-500: #002746;
+  --eab-blue-400: #1070bc;
+  --eab-teal: #00b1b0;
+  --eab-orange: #ed8b00;
+  --eab-grey: #606060;
+  --modal-overlay-color: rgba(0, 0, 0, 0.6);
+  --modal-background-color: white;
+  --hover-animation: all 0.2s ease-out;
+  --modal-max-width: 48rem;
+}
+
+:where(#${ctaButtonId}) {
+  background-color: var(--eab-blue-500);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: var(--hover-animation);
+}
+
+:where(#${ctaButtonId}):hover{
+  background-color: var(--eab-blue-400);
+} 
+
   #${eabModalId} {
-  position: fixed;
-  overflow: hidden;
-  background-color: rgba(0, 0, 0, 0.4);
-  left : 0;
-  top: 0;
-  width: 0px;
-  height : 0px;
-  opacity: 0;
-  transition: opacity 0.15s ease-out, width 0s linear 0.15s, height 0s linear 0.15s;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    overflow: hidden;
+    background-color: var(--modal-overlay-color);
+    left : 0;
+    top: 0;
+    width: 0px;
+    height : 0px;
+    opacity: 0;
+    transition: opacity 0.15s ease-out, width 0s linear 0.15s, height 0s linear 0.15s;
 }
 
 #${eabModalId}.visible {
-  width: 100%;
-  height: 100%;
-  opacity: 1;
-  transition: opacity 0.15s ease-out;
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transition: opacity 0.15s ease-out;
 }
 
 #${eabModalId} .modal {
     height:  ${modalHeight}%;
-  width: 90%;
-  margin: 0 auto;
-  width: 600px;
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-  position: relative;
- top: 50%;
-  transform: translateY(-50%);
-  overflow-y: scroll
+    width: 90%;
+    max-width: var(--modal-max-width);
+    background-color: var(--modal-background-color);
+    padding-top: 3rem;
+    position: relative;
 }
 
 #${eabModalId} .modal .not-used {
@@ -69,11 +96,56 @@ let modalStyles = `
   overflow-y: scroll
 }
 
-#${iframeID} {
+:is(#${iframeID}) {
     width: 100%;
     height: 100%;
     border: none;
+    background: white;
 }
+
+:where(#${closeButtonId}){
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  // background-color: white;
+  border: none;
+  width: 2rem;
+  height: 2rem;
+  text-indent: -9999px;
+  cursor: pointer;
+  transition: var(--hover-animation);
+}
+
+:where(#${closeButtonId})::before,
+:where(#${closeButtonId})::after{
+  content: '';
+  display: block;
+  position: absolute;
+  width: 0.1em;
+  height: 0.7em;
+  top: 50%;
+  left: 50%;
+  background-color: var(--eab-grey);
+  transform: translate(-50%, -50%) rotate(45deg);
+  font-size: clamp(1rem, 2vw, 2rem);
+  transition: var(--hover-animation);
+}
+
+:where(#${closeButtonId})::after{
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+:where(#${closeButtonId}):hover{
+  background: white;
+}
+
+:where(#${closeButtonId}):hover::before,
+:where(#${closeButtonId}):hover::after{
+  background: var(--eab-blue-500);
+  width: 0.2em;
+  height: 1em;
+}
+
 `;
 
 function setup() {
@@ -94,7 +166,7 @@ function setup() {
 
   // Add a close button
   let closeButton = document.createElement('button');
-  closeButton.id = 'eab-closeButton';
+  closeButton.id = closeButtonId;
   closeButton.innerHTML = 'Close';
 
   let modal = document.createElement('div');
